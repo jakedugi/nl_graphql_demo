@@ -1,5 +1,7 @@
 import { NextRequest } from "next/server";
 import { Groq } from "groq-sdk";
+import { env } from "../../../config/env";
+import { API_CONSTANTS, HTTP_CONSTANTS } from "../../../config/constants";
 
 export const runtime = "edge"; // optional, improves streaming
 
@@ -7,17 +9,13 @@ export async function POST(req: NextRequest) {
   const { messages } = await req.json();
 
   const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
+    apiKey: env.GROQ_API_KEY,
   });
 
   const chatCompletion = await groq.chat.completions.create({
     messages,
-    model: "openai/gpt-oss-20b",
-    temperature: 1,
-    max_completion_tokens: 8192,
-    top_p: 1,
-    stream: true,
-    reasoning_effort: "medium",
+    model: API_CONSTANTS.MODEL_NAME,
+    ...API_CONSTANTS.COPILOT_CONFIG,
     stop: null,
   });
 
@@ -40,9 +38,9 @@ export async function POST(req: NextRequest) {
 
   return new Response(stream, {
     headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-cache",
-      "Connection": "keep-alive",
+      "Content-Type": HTTP_CONSTANTS.CONTENT_TYPE.TEXT_PLAIN,
+      "Cache-Control": HTTP_CONSTANTS.CACHE_CONTROL.NO_CACHE,
+      "Connection": HTTP_CONSTANTS.CONNECTION.KEEP_ALIVE,
     },
   });
 }

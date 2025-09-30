@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Opta Copilot Sandbox",
-  description: "AI-powered chat interface with Groq GPT-OSS-20B",
+  title: "NL-GraphQL Demo",
+  description: "AI-powered NL-GraphQL interface with Groq GPT-OSS-20B",
 };
 
 export default function RootLayout({

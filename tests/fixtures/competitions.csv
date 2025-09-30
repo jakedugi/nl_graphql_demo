@@ -1,0 +1,5 @@
+id,name,canonical_name,aliases,country,code
+comp:epl,Premier League,Premier League,"EPL,English Premier League",England,EPL
+comp:ucl,UEFA Champions League,UEFA Champions League,"UCL,Champions League",Europe,UCL
+comp:laliga,La Liga,La Liga,"Spanish La Liga,La Liga",Spain,ESP
+comp:bundesliga,Bundesliga,Bundesliga,"German Bundesliga",Germany,GER

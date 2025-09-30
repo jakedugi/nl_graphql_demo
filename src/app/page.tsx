@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
+import { HTTP_CONSTANTS } from "../config/constants";
 
 interface Message {
   role: "user" | "assistant";
@@ -11,6 +12,7 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [mode, setMode] = useState<"chat" | "nlq">("nlq"); // Default to NLQ mode
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -40,45 +42,122 @@ export default function Home() {
       setMessages([...updatedMessages, assistantMessage]);
 
       try {
-        const response = await fetch("/api/copilotkit", {
+        const endpoint = mode === "chat" ? "/api/copilotkit" : "/api/nlq";
+        const body = mode === "chat"
+          ? {
+              messages: updatedMessages.map(msg => ({
+                role: msg.role,
+                content: msg.content
+              }))
+            }
+          : { query: userMessage.content };
+
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": HTTP_CONSTANTS.CONTENT_TYPE.JSON,
           },
-          body: JSON.stringify({
-            messages: updatedMessages.map(msg => ({
-              role: msg.role,
-              content: msg.content
-            }))
-          }),
+          body: JSON.stringify(body),
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let accumulatedContent = "";
+        if (mode === "chat") {
+          // Handle streaming chat response
+          const reader = response.body?.getReader();
+          const decoder = new TextDecoder();
+          let accumulatedContent = "";
 
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+          if (reader) {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
 
-            const chunk = decoder.decode(value);
-            accumulatedContent += chunk;
+              const chunk = decoder.decode(value);
+              accumulatedContent += chunk;
+
+              setMessages(prevMessages => {
+                const newMessages = [...prevMessages];
+                const lastMessage = newMessages[newMessages.length - 1];
+                if (lastMessage.role === "assistant") {
+                  lastMessage.content = accumulatedContent;
+                }
+                return newMessages;
+              });
+
+              scrollToBottom();
+            }
+          }
+        } else {
+          // Handle NLQ JSON response
+          const result = await response.json();
+
+          if (result.error) {
+            let errorContent = `**Error:** ${result.error}`;
+
+            if (result.details) {
+              errorContent += `\n\n**Details:** ${result.details}`;
+            }
+
+            if (result.validationErrors) {
+              errorContent += `\n\n**Validation Errors:**\n${result.validationErrors.map((err: string, i: number) => `${i + 1}. ${err}`).join('\n')}`;
+            }
+
+            if (result.parseError) {
+              errorContent += `\n\n**Parse Error:** ${result.parseError}`;
+            }
+
+            if (result.rawResponse) {
+              errorContent += `\n\n**Raw AI Response:**\n\`\`\`\n${result.rawResponse}\n\`\`\``;
+            }
+
+            if (result.plan) {
+              errorContent += `\n\n**Generated Plan:**\n\`\`\`json\n${JSON.stringify(result.plan, null, 2)}\n\`\`\``;
+            }
+
+            if (result.compiledQuery) {
+              errorContent += `\n\n**Compiled Query:**\n\`\`\`graphql\n${result.compiledQuery}\n\`\`\``;
+            }
 
             setMessages(prevMessages => {
               const newMessages = [...prevMessages];
               const lastMessage = newMessages[newMessages.length - 1];
               if (lastMessage.role === "assistant") {
-                lastMessage.content = accumulatedContent;
+                lastMessage.content = errorContent;
               }
               return newMessages;
             });
+          } else {
+            // Format the NLQ response
+            const formattedResponse = `
+**Query Plan:**
+\`\`\`json
+${JSON.stringify(result.plan, null, 2)}
+\`\`\`
 
-            scrollToBottom();
+**Compiled GraphQL:**
+\`\`\`graphql
+${result.compiledQuery}
+\`\`\`
+
+**Results:**
+\`\`\`json
+${JSON.stringify(result.data, null, 2)}
+\`\`\`
+${result.entityResolutions ? `\n**Entity Resolutions:**\n${JSON.stringify(result.entityResolutions, null, 2)}` : ""}
+            `.trim();
+
+            setMessages(prevMessages => {
+              const newMessages = [...prevMessages];
+              const lastMessage = newMessages[newMessages.length - 1];
+              if (lastMessage.role === "assistant") {
+                lastMessage.content = formattedResponse;
+              }
+              return newMessages;
+            });
           }
         }
       } catch (error) {
@@ -87,7 +166,7 @@ export default function Home() {
           const newMessages = [...prevMessages];
           const lastMessage = newMessages[newMessages.length - 1];
           if (lastMessage.role === "assistant") {
-            lastMessage.content = "Sorry, I encountered an error. Please try again.";
+            lastMessage.content = `Sorry, I encountered an error: ${error instanceof Error ? error.message : String(error)}`;
           }
           return newMessages;
         });
@@ -106,8 +185,38 @@ export default function Home() {
       fontFamily: "Arial, sans-serif"
     }}>
       <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
-        Copilot Chat - Connected to Groq GPT-OSS-20B 🚀
+        NL-GraphQL Demo - Connected to Groq (GPT-OSS-20B)
       </h1>
+
+      {/* Mode Toggle */}
+      <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "20px" }}>
+        <button
+          onClick={() => setMode("nlq")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: mode === "nlq" ? "#007bff" : "#f8f9fa",
+            color: mode === "nlq" ? "white" : "#333",
+            border: "1px solid #ddd",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
+        >
+          NL-GraphQL
+        </button>
+        <button
+          onClick={() => setMode("chat")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: mode === "chat" ? "#007bff" : "#f8f9fa",
+            color: mode === "chat" ? "white" : "#333",
+            border: "1px solid #ddd",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
+        >
+          Chat
+        </button>
+      </div>
 
       <div style={{
         flex: 1,
@@ -120,7 +229,10 @@ export default function Home() {
       }}>
         {messages.length === 0 && (
           <p style={{ color: "#666", fontStyle: "italic" }}>
-            Welcome! Ask me something using the GPT-OSS-20B model...
+            {mode === "nlq"
+              ? "Welcome! Ask natural language questions about football stats (e.g., 'Show me Mohamed Salah's goals this season')"
+              : "Welcome! Ask me anything using the GPT-OSS-20B model"
+            }
           </p>
         )}
         {messages.map((message) => (
@@ -147,7 +259,7 @@ export default function Home() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message..."
+          placeholder={mode === "nlq" ? "Ask about football stats (e.g., 'Liverpool's recent matches')..." : "Type your message..."}
           style={{
             flex: 1,
             padding: "12px",
@@ -170,7 +282,7 @@ export default function Home() {
             fontSize: "16px"
           }}
         >
-          {isLoading ? "..." : "Send"}
+          {isLoading ? "..." : mode === "nlq" ? "Query" : "Send"}
         </button>
       </form>
     </main>

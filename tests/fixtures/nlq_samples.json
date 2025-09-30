@@ -1,0 +1,69 @@
+[
+  {
+    "description": "Simple player lookup",
+    "query": "Show me Mohamed Salah goals and assists this season",
+    "expected_plan": {
+      "operation": "query",
+      "rootField": "players",
+      "arguments": {
+        "name": "Mohamed Salah"
+      },
+      "fields": ["goals", "assists"]
+    }
+  },
+  {
+    "description": "Multi-player lookup",
+    "query": "Show me goals of Haaland and Salah",
+    "expected_plan": {
+      "operation": "query",
+      "rootField": "players",
+      "arguments": {
+        "names": ["Haaland", "Salah"]
+      },
+      "fields": ["name", "goals"]
+    }
+  },
+  {
+    "description": "Team matches",
+    "query": "Liverpool recent matches",
+    "expected_plan": {
+      "operation": "query",
+      "rootField": "matches",
+      "arguments": {
+        "team": "Liverpool"
+      },
+      "fields": ["id", "homeScore", "awayScore", "date", "utcKickoff", "round"]
+    }
+  },
+  {
+    "description": "Complex time-bucketed goals",
+    "query": "Show me all goals of Erling Haaland, Kevin de Bruyne and Mo Salah that they scored in the first half in the season 2022/23 to 2025/26 in the Premier League, break it down in 15min buckets and group it by season",
+    "expected_plan": {
+      "operation": "query",
+      "rootField": "stats",
+      "arguments": {
+        "filter": {
+          "players": ["player:haaland", "player:de_bruyne", "player:salah"],
+          "competitions": ["comp:epl"],
+          "seasons": {
+            "from": "2022/23",
+            "to": "2025/26"
+          },
+          "period": "FIRST_HALF"
+        },
+        "split": {
+          "timeInterval": {
+            "sizeMinutes": 15
+          }
+        },
+        "groupBy": ["PLAYER", "TIME_INTERVAL", "SEASON"]
+      },
+      "fields": ["playerGoals"]
+    }
+  },
+  {
+    "description": "Non-football query",
+    "query": "What's the weather like today?",
+    "expected_error": "Please ask about football/soccer statistics"
+  }
+]
