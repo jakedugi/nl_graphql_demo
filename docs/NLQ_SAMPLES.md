@@ -184,16 +184,4 @@ This document contains sample natural language queries and their expected GraphQ
 - Measure accuracy, completeness, and correctness
 - Track improvements over time
 
-## Future Query Support
 
-### Planned Additions
-- "Goals by day of week"
-- "Performance vs specific opponents"
-- "Season-over-season comparisons"
-- "Home vs away performance"
-
-### Advanced Analytics
-- Trend analysis
-- Predictive insights
-- Comparative statistics
-- Custom time ranges

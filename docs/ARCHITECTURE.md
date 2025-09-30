@@ -101,17 +101,3 @@ See `/docs/DATA_FLOW.md` for detailed request processing pipeline and contracts.
 
 See `/docs/PERF.md` for detailed performance analysis and cost estimates.
 
-## Future Extensions
-
-### Deferred Features
-- **Real GraphQL Endpoint**: Replace mock execution
-- **Multi-tenant RBAC**: Competition/entitlement filtering
-- **Voice Input**: STT integration
-- **Advanced Analytics**: Trend analysis and predictions
-
-### Overkill Avoided
-- **LangGraph**: Single-step planning sufficient
-- **Vector DBs**: Simple fuzzy search adequate
-- **CrewAI**: No multi-agent complexity needed
-- **GraphQL Codegen**: Manual type safety via Zod sufficient
-- **AI SDK**: Consolidated to LangChain.js + direct Groq SDK

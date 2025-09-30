@@ -4,11 +4,21 @@ export const API_CONSTANTS = {
   MODEL_NAME: "openai/gpt-oss-20b",
 
   // NLQ Configuration - parameters for natural language query processing
+  // Low temperature (0.1) for deterministic, consistent NL-to-GraphQL conversion
   NLQ_CONFIG: {
     temperature: 0.1,
   } as const,
 
-  // CopilotKit Configuration - parameters for copilot chat completion
+  // Model Factory - creates model instances with consistent configuration
+  // Uses NLQ_CONFIG temperature by default for query processing
+  createGroqModel: (apiKey: string) => ({
+    apiKey,
+    model: API_CONSTANTS.MODEL_NAME,
+    temperature: API_CONSTANTS.NLQ_CONFIG.temperature,
+  }),
+
+  // CopilotKit Configuration regular chat mode for side by side comparison 
+  // Higher temperature (1.0) for creative, varied chat responses
   COPILOT_CONFIG: {
     temperature: 1,
     max_completion_tokens: 8192,
@@ -45,7 +55,6 @@ export const DEFAULTS = {
 
 // File Paths - Single Source of Truth for file and directory paths
 export const PATHS = {
-  FIXTURES_DIR: "tests/fixtures",
   PLAYERS_CSV: "tests/fixtures/players.csv",
   TEAMS_CSV: "tests/fixtures/teams.csv",
   COMPETITIONS_CSV: "tests/fixtures/competitions.csv",

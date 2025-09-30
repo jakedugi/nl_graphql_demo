@@ -2,6 +2,9 @@
 
 ## Current Performance Snapshot
 
+###
+**Not fully tested ballpark figures!**
+
 ### Latency Benchmarks (Local Development)
 - **P50 End-to-End**: 892ms
 - **P95 End-to-End**: 1247ms
@@ -48,7 +51,7 @@ Daily Usage     | Monthly Cost | Annual Cost
 
 ## Optimization Opportunities
 
-### Immediate (Low Effort)
+### Immediate
 - **Prompt Caching**: Reuse system prompts (~20% reduction)
 - **Response Compression**: Gzip API responses
 - **Connection Pooling**: Reuse AI model connections
@@ -57,11 +60,6 @@ Daily Usage     | Monthly Cost | Annual Cost
 - **Query Caching**: Cache common entity resolutions
 - **Streaming Responses**: Reduce perceived latency
 - **Batch Processing**: Group similar queries
-
-### Future Optimizations
-- **Model Distillation**: Smaller/faster model for simple queries
-- **Edge Deployment**: Reduce network latency
-- **CDN Caching**: Cache static entity data
 
 ## Scalability Considerations
 
@@ -104,19 +102,19 @@ Daily Usage     | Monthly Cost | Annual Cost
 - AI model timeout > 10 seconds
 - Memory usage > 300MB
 
-## Future Performance Roadmap
+## Potential Future Performance 
 
-### Phase 1 (Next Sprint)
+### Phase 1
 - Implement response caching
 - Add performance monitoring
 - Optimize entity resolution
 
-### Phase 2 (Next Month)
+### Phase 2 
 - Model optimization/fine-tuning
 - Database integration
 - CDN deployment
 
-### Phase 3 (Next Quarter)
+### Phase 3 
 - Multi-region deployment
 - Advanced caching strategies
 - Predictive performance optimization

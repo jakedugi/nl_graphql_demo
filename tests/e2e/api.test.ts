@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 
 describe("API Integration Tests", () => {
   // Note: These are integration tests that would normally test against a running server
-  // For now, we'll create mock tests that validate the expected API behavior
+  // These are mock tests that validate the expected API behavior
 
   describe("NLQ API Endpoint", () => {
     it("should handle simple player queries", async () => {
