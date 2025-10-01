@@ -17,9 +17,9 @@ export const API_CONSTANTS = {
     temperature: API_CONSTANTS.NLQ_CONFIG.temperature,
   }),
 
-  // CopilotKit Configuration regular chat mode for side by side comparison 
+  // Chat Configuration - general conversational AI
   // Higher temperature (1.0) for creative, varied chat responses
-  COPILOT_CONFIG: {
+  CHAT_CONFIG: {
     temperature: 1,
     max_completion_tokens: 8192,
     top_p: 1,

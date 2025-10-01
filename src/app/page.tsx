@@ -42,7 +42,7 @@ export default function Home() {
       setMessages([...updatedMessages, assistantMessage]);
 
       try {
-        const endpoint = mode === "chat" ? "/api/copilotkit" : "/api/nlq";
+        const endpoint = mode === "chat" ? "/api/chat" : "/api/nlq";
         const body = mode === "chat"
           ? {
               messages: updatedMessages.map(msg => ({

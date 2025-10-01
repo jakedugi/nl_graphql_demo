@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   const chatCompletion = await groq.chat.completions.create({
     messages,
     model: API_CONSTANTS.MODEL_NAME,
-    ...API_CONSTANTS.COPILOT_CONFIG,
+    ...API_CONSTANTS.CHAT_CONFIG,
     stop: null,
   });
 
