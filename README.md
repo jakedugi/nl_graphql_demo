@@ -1,25 +1,19 @@
-# NL-GraphQL
+# NL-GraphQL Demo
 
-Converts natural language queries into GraphQL operations.
+Converts natural language queries about football stats into GraphQL operations using Groq AI.
 
-## Setup
+## Quick Start
 
 ```bash
 npm install
-cp .env.example .env.local  # Add GROQ_API_KEY
+cp env.example .env.local  # Add your GROQ_API_KEY
 npm run dev
 ```
 
 Visit http://localhost:3000 and try queries like:
 - "Show me Mohamed Salah's goals this season"
 - "What teams are in the Premier League"
-
-## Docs
-
-- [Architecture](docs/ARCHITECTURE.md)
-- [Data Flow](docs/DATA_FLOW.md)
-- [Performance](docs/PERF.md)
-- [Samples](docs/NLQ_SAMPLES.md)
+- "Liverpool recent matches"
 
 ## Test
 

@@ -53,9 +53,3 @@ export const DEFAULTS = {
   ENCODING: "utf-8" as const,
 } as const;
 
-// File Paths - Single Source of Truth for file and directory paths
-export const PATHS = {
-  PLAYERS_CSV: "tests/fixtures/players.csv",
-  TEAMS_CSV: "tests/fixtures/teams.csv",
-  COMPETITIONS_CSV: "tests/fixtures/competitions.csv",
-} as const;
